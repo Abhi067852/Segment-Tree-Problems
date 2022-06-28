@@ -1,0 +1,168 @@
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+
+
+#define endl '\n'
+#define ll       long long int
+#define ld              long double
+#define pb              push_back
+#define P               pair<int,int>
+#define F               first
+#define S               second
+#define inf             3e18
+#define vi              vector<int>
+#define ps(x,y)         fixed<<setprecision(y)<<x
+#define pqb             priority_queue<int>
+#define pqs             priority_queue<int,vi,greater<int> >
+#define MAXN            4e5+2
+#define modu            1e9+7
+// ll gcd (ll a, ll b) {return ( a ? gcd(b % a, a) : b );}
+// ll power(ll a, ll n) {ll p = 1; while (n > 0) {if (n % 2) {p = p * a;} n >>= 1; a *= a;} return p;}
+// ll power(ll a, ll n, ll mod) {ll p = 1; while (n > 0) {if (n % 2) {p = p * a; p %= mod;} n >>= 1; a *= a; a %= mod;} return p % mod;}
+
+// //1.DP se soch
+// //2.DP se soch
+// //3.DP se soch
+// //graph, gcd, BS, seive
+// //if NOTA,then
+// //brute force hi optimal h
+template<typename T>
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+using orderedMultiset = tree<T ,null_type,std::less_equal<T>, rb_tree_tag,tree_order_statistics_node_update>;
+// ll ceil(ll a, ll b){
+//     ll c=(a+b-1)/b;
+//     return c;
+// }
+
+ll gcd(ll a , ll b){
+    if(a==0){
+        return b;
+    }
+    if(b==0){
+        return a;
+    }
+    return gcd(b,a%b);
+}
+
+/*ll NCR(ll n , ll r){
+    n=fact[n];
+    
+    ll a=fact[r] , b=fact[n-r];
+    a=power_mod(a,mod-2);
+    b=power_mod(b , mod-2);
+    a=(a*b)%mod;
+    n=(n*a)%mod;
+    return n;
+ 
+}*/
+void help(vector<int> &bit , int index , int k){
+    while(index <bit.size()){
+        bit[index]+=k;
+        index+=(index&(-index));
+    }
+}
+int quer(vector<int> &bit  , int index){
+    int ans=0;
+    while(index){
+        ans+=bit[index];
+        index-=(index &(-index));
+    }
+    return ans;
+}
+int query(vector<int> &bit , int a , int b){
+    int ans=quer(bit ,b)-quer(bit ,a-1);
+    return ans;
+}
+int ans=0;
+void build(int ind,int l,int h,int seg[],int a[],int isor)
+{
+    if(l==h)
+    {
+        seg[ind]=a[l];
+        return;
+    }
+    int mid=(l+h)/2;
+    if(isor==1)
+    {
+        build(2*ind+1,l,mid,seg,a,0);
+        build(2*ind+2,mid+1,h,seg,a,0);
+        seg[ind]=seg[2*ind+1]|seg[2*ind+2];
+    }
+    else
+    {
+       build(2*ind+1,l,mid,seg,a,1);
+        build(2*ind+2,mid+1,h,seg,a,1);
+        seg[ind]=seg[2*ind+1]^seg[2*ind+2]; 
+    }
+    return;
+}
+void update(int ind,int l,int h, int seg[],int i,int val,int isorr)
+{
+    if(l==h)
+    {
+        seg[ind]=val;
+        
+        return;
+    }
+    int mid=(l+h)/2;
+    if(i<=mid)
+        update(2*ind+1,l,mid,seg,i,val,!isorr);
+    else
+        update(2*ind+2,mid+1,h,seg,i,val,!isorr);
+    if(isorr==1)
+        seg[ind]=seg[2*ind+1]|seg[2*ind+2];
+    else
+        seg[ind]=seg[2*ind+1]^seg[2*ind+2];
+    return;
+}
+
+void solve()
+{
+  int n,q;
+  cin>>n>>q;
+  int el=pow(2,n);
+  int a[el];
+  for(int i=0;i<el;i++)
+  {
+    cin>>a[i];
+  }  
+  int seg[4*el+1];
+  int isorr=n%2;
+  build(0,0,el-1,seg,a,isorr);
+  
+ 
+  
+  
+  while(q--)
+  {
+    int i,val;
+    cin>>i>>val;
+    i-=1;
+    update(0,0,el-1,seg,i,val,isorr);
+  //   for(int i=0;i<el;i++)
+  // {
+  //   cout<<seg[i]<<" ";
+  // }
+    
+    cout<<seg[0]<<endl;
+  }
+  // cout<<seg[0]<<endl;
+}
+
+
+int main()
+{
+#ifndef ONLINE_JUDGE
+    freopen("input.txt", "r", stdin);
+    freopen("output.txt", "w", stdout);
+#endif
+    // int t;
+    // cin>>t;
+    // while(t--)
+        solve();
+    
+    return 0;
+}
